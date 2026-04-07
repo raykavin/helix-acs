@@ -1,0 +1,48 @@
+# IDE & editors
+.vscode/
+.idea/
+*.code-workspace
+
+# Docker & deployment
+.docker/
+deploy/
+docker-compose*.yml
+
+# Config & scripts
+configs/
+scripts/
+Makefile
+
+# Debug binaries
+__debug_bin*
+*.exe
+*.test
+
+# Version control
+.git/
+.gitignore
+.gitattributes
+
+# Docs
+*.md
+*.txt
+LICENSE
+docs/
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# Temp & logs
+*.log
+*.tmp
+tmp/
+temp/
+
+# Others
+configs/
+scripts/
