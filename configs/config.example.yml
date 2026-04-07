@@ -1,0 +1,130 @@
+# Helix ACS 
+#
+# Copy this file to config.yml and adjust the values for your environment
+# before starting the application.
+#
+#   cp configs/config.example.yml configs/config.yml
+#
+
+application:
+  # Name displayed in the startup banner
+  name: Helix ACS
+
+  # Short description of the application
+  description: Auto Configuration Server (ACS) for CPE Management
+
+  # Application version 
+  version: "1.0.0"
+
+  # Log level: debug | info | warn | error
+  # Use "info" or "warn" in production.
+  log_level: info
+
+  # CWMP task queue
+  tasks:
+    queue:
+      # Enable the task processor
+      enabled: true
+
+      # Queue sweep interval
+      # Mostly relevant for reconnection scenarios; tasks are normally
+      # delivered on demand during CPE Inform sessions.
+      interval: "10s"
+
+      # Run one sweep immediately on startup
+      first_run: true
+
+      # If true, run only once then stop
+      run_once: false
+
+      # Maximum delivery attempts before marking a task as "failed"
+      max_attempts: 3
+
+  # JWT authentication (web interface)
+  jwt:
+    # Secret used to sign tokens. Use a long, random string.
+    # Generate one with: openssl rand -base64 32
+    secret: "REPLACE_WITH_A_LONG_RANDOM_SECRET"
+
+    # Access token lifetime (e.g. "1h", "8h", "24h")
+    expires_in: "24h"
+
+    # Refresh token lifetime (e.g. "168h" = 7 days)
+    refresh_expires_in: "168h"
+
+  # CWMP server (TR-069)
+  acs:
+    # Port the CWMP server listens on for CPE connections.
+    # TR-069 standard port: 7547
+    listen_port: 7547
+
+    # Credentials used by CPEs to authenticate against the ACS (Digest Auth).
+    # Configure the same username/password on all managed CPEs.
+    username: "acs"
+    password: "REPLACE_WITH_ACS_PASSWORD"
+
+    # Inform interval pushed to CPEs (in whole minutes).
+    # Defines how often CPEs check in with the ACS.
+    # Recommended: 5 (every 5 minutes) for production environments.
+    inform_interval: 5
+
+    # Public ACS URL provisioned on CPEs.
+    # Must be reachable from the CPEs' network.
+    # Examples:
+    #   http://192.168.0.10:7547/acs      (LAN / local environment)
+    #   https://acs.yourcompany.com/acs   (production with TLS)
+    url: "http://YOUR_IP_OR_DOMAIN:7547/acs"
+
+  # HTTP server (REST API + web UI)
+  web:
+    # Port for the REST API and web interface
+    listen_port: 8080
+
+    # TLS / HTTPS
+    # Strongly recommended in production use SSL or a TLS-terminating
+    # reverse proxy (nginx, Caddy, etc.).
+    use_ssl: false
+    crt: "certs/server.crt"   # path to the PEM certificate
+    key: "certs/server.key"   # path to the PEM private key
+
+    # CORS headers returned on API responses.
+    # Restrict Access-Control-Allow-Origin in production.
+    cors:
+      Access-Control-Allow-Credentials: "false"
+      Access-Control-Allow-Headers: "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, Accept, Origin, Cache-Control, X-Request-ID, X-Requested-With"
+      Access-Control-Allow-Methods: "POST, OPTIONS, GET, PATCH, PUT, DELETE"
+      Access-Control-Allow-Origin: "*"   # production: "https://yourcompany.com"
+      Access-Control-Max-Age: "86400"
+      Vary: "Origin"
+
+# Databases
+databases:
+
+  # Redis (task queue and cache)
+  cache:
+    dialector: redis
+    log_level: error   # silent | error | warn | info
+
+    # Redis connection URI.
+    # Accepted formats:
+    #   redis://[user:password@]host:port[/db]
+    #   redis://:password@host:port
+    uri: "redis://localhost:6379"
+
+    # TTL for tasks stored in the queue (e.g. "168h" = 7 days)
+    ttl: "168h"
+
+  # MongoDB (device persistence)
+  storage:
+    dialector: mongodb
+    log_level: error   # silent | error | warn | info
+
+    # MongoDB connection URI.
+    # Accepted formats:
+    #   mongodb://host:port
+    #   mongodb://user:password@host:port/db?authSource=admin
+    #   mongodb+srv://user:password@cluster.mongodb.net
+    uri: "mongodb://localhost:27017"
+
+    # Name of the database to create/use
+    name: "helix_acs"

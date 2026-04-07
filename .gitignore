@@ -22,13 +22,13 @@ go.work.sum
 
 # Environment
 *.env
-*.yml
 !*.env.example
-!*.example.yml
 
+# YAML — ignore secrets but allow infrastructure files
+configs/config.yml
+!configs/config.example.yml
 
 # IDE & editors
-.vscode/
 .idea/
 *.code-workspace
 *.swp
@@ -54,4 +54,3 @@ temp/
 *.pprof
 
 # Others
-scripts/
