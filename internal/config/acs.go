@@ -8,11 +8,12 @@ type acsConfig struct {
 	Username       string        `mapstructure:"username"`
 	Password       string        `mapstructure:"password"`
 	URL            string        `mapstructure:"url"`
+	SchemasDir     string        `mapstructure:"schemas_dir"`
 }
 
 var _ ACSConfigProvider = (acsConfig)(acsConfig{})
 
-// GetCWMPServerListenPort implements [ACSConfigProvider].
+// GetListenPort implements [ACSConfigProvider].
 func (a acsConfig) GetListenPort() uint16 { return a.ListenPort }
 
 // GetInformInterval implements [ACSConfigProvider].
@@ -26,3 +27,12 @@ func (a acsConfig) GetPassword() string { return a.Password }
 
 // GetURL implements [ACSConfigProvider].
 func (a acsConfig) GetURL() string { return a.URL }
+
+// GetSchemasDir implements [ACSConfigProvider].
+// Returns the path to the schemas directory, defaulting to "./schemas".
+func (a acsConfig) GetSchemasDir() string {
+	if a.SchemasDir == "" {
+		return "./schemas"
+	}
+	return a.SchemasDir
+}

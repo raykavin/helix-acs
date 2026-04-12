@@ -75,6 +75,14 @@ application:
     #   https://acs.yourcompany.com/acs   (production with TLS)
     url: "http://YOUR_IP_OR_DOMAIN:7547/acs"
 
+    # Path to the directory containing TR-069 parameter schema files.
+    # The directory must follow the structure:
+    #   <schemas_dir>/tr181/        – generic TR-181 schemas
+    #   <schemas_dir>/tr098/        – generic TR-098 schemas
+    #   <schemas_dir>/vendors/<vendor>/<model>/  – vendor-specific overrides
+    # Defaults to "./schemas" when omitted.
+    schemas_dir: "./schemas"
+
   # HTTP server (REST API + web UI)
   web:
     # Port for the REST API and web interface

@@ -108,7 +108,7 @@ func run(ctx context.Context, cfg config.ConfigProvider, appLogger l.Logger) err
 
 	jwtSvc := initJWTService(appCfg.GetJWT())
 	taskQueue := initTaskQueue(cacheDB, appLogger, cacheCC.GetTTL(), tsk.GetMaxAttempts())
-	schemaReg := initSchemaRegistry(appLogger)
+	schemaReg := initSchemaRegistry(acsConfig.GetSchemasDir(), appLogger)
 	cwmpSrv := initCWMPServer(deviceSvc, taskQueue, acsConfig, appLogger, schemaReg)
 
 	routerCfg := api.Config{
@@ -218,8 +218,7 @@ func initJWTService(cfg config.JWTConfigProvider) *auth.JWTService {
 // initSchemaRegistry loads TR-069 parameter schemas from the ./schemas directory.
 // On failure it logs a warning and returns an empty registry so the system falls
 // back to the built-in Go mappers.
-func initSchemaRegistry(appLogger l.Logger) *schema.Registry {
-	const schemasDir = "./schemas"
+func initSchemaRegistry(schemasDir string, appLogger l.Logger) *schema.Registry {
 	reg := schema.NewRegistry()
 	if err := reg.LoadDir(schemasDir); err != nil {
 		appLogger.WithError(err).

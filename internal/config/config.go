@@ -41,7 +41,7 @@ type ACSConfigProvider interface {
 	GetPassword() string              // Returns the ACS password
 	GetURL() string                   // Returns the ACS configuration URL
 	GetInformInterval() time.Duration // Returns the ACS inform interval
-
+	GetSchemasDir() string            // Returns the path to the TR-069 parameter schema files directory
 }
 
 // JWTConfigProvider defines the configuration for the jwt
