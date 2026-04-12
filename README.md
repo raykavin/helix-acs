@@ -22,6 +22,7 @@ Servidor de configuração automática (ACS) para gerenciamento de equipamentos 
 - [API REST](#api-rest)
 - [Tarefas CWMP](#tarefas-cwmp)
 - [Modelos de dados](#modelos-de-dados)
+- [Esquemas de parâmetros](#esquemas-de-parâmetros)
 - [Desenvolvimento](#desenvolvimento)
 
 ---
@@ -81,6 +82,7 @@ Dois servidores HTTP rodam simultaneamente:
 - Registro automático de CPEs no primeiro contato (Inform)
 - Descoberta dinâmica de números de instância TR-181 e TR-098
 - Detecção automática do modelo de dados (TR-181 ou TR-098)
+- Resolução automática de esquema por fabricante (ex: Huawei, ZTE) com fallback para o esquema genérico
 - Filtro e paginação na listagem de dispositivos
 - Edição de tags e metadados
 
@@ -139,7 +141,8 @@ CPE (roteador/modem)
 | `internal/api` | Roteamento HTTP, handlers REST, middlewares (CORS, JWT, rate limit, logging) |
 | `internal/device` | Modelo de dispositivo, repositório MongoDB e serviço |
 | `internal/task` | Tipos de tarefa, payloads, fila Redis e executor |
-| `internal/datamodel` | Mappers TR-181 e TR-098 com descoberta dinâmica de instâncias |
+| `internal/datamodel` | Interface `Mapper`, mappers TR-181 e TR-098 com descoberta dinâmica de instâncias |
+| `internal/schema` | Carregamento de esquemas YAML, resolução por fabricante e `SchemaMapper` |
 | `internal/auth` | JWT e Digest Auth |
 | `internal/config` | Carregamento e validação de configuração (Viper) |
 | `web` | Interface web incorporada ao binário (HTML, CSS, JS) |
@@ -192,6 +195,7 @@ Consulte o arquivo [configs/config.example.yml](configs/config.example.yml) para
 | `password` | string | Senha para autenticação Digest das CPEs |
 | `url` | string | URL do ACS provisionada nas CPEs |
 | `inform_interval` | int | Intervalo de Inform em minutos |
+| `schemas_dir` | string | Caminho para o diretório de esquemas YAML (padrão: `./schemas`) |
 
 **`application.web`**
 
@@ -443,7 +447,82 @@ Dessa forma as tarefas são sempre enviadas para o caminho correto, independente
 
 ### Senha da interface web
 
-Para dispositivos TR-181, o caminho padrão utilizado é `Device.Users.User.1.Password`. Para dispositivos TR-098, o caminho varia por fabricante e não existe um padrão definido na especificação. Nesses casos, use a tarefa `set_parameters` informando o caminho específico do fabricante.
+Para dispositivos TR-181, o caminho padrão é `Device.Users.User.1.Password`. Fabricantes como Huawei usam caminhos proprietários (ex: `Device.X_HW_Security.AdminPassword`) — esses casos são cobertos por esquemas vendor-específicos em `schemas/vendors/`. Para dispositivos TR-098 sem esquema vendor cadastrado, use a tarefa `set_parameters` informando o caminho diretamente.
+
+## Esquemas de parâmetros
+
+Todos os caminhos de parâmetros TR-069 são definidos em arquivos YAML no diretório `schemas/`. Nenhum caminho está embutido no código da aplicação.
+
+### Estrutura do diretório
+
+```
+schemas/
+├── tr181/                        # Caminhos padrão TR-181
+│   ├── wifi.yaml
+│   ├── wan.yaml
+│   ├── lan.yaml
+│   ├── system.yaml
+│   ├── management.yaml
+│   ├── diagnostics.yaml
+│   ├── hosts.yaml
+│   ├── port_forwarding.yaml
+│   └── change_password.yaml
+├── tr098/                        # Caminhos padrão TR-098
+│   └── ...                       # mesma estrutura
+└── vendors/
+    ├── huawei/
+    │   └── tr181/
+    │       └── change_password.yaml   # sobrescreve apenas o que difere
+    └── zte/
+        └── tr098/
+            └── change_password.yaml
+```
+
+### Formato de um arquivo de esquema
+
+```yaml
+id: change_password
+model: tr181
+vendor: huawei
+description: Senha de administrador para dispositivos Huawei TR-181
+
+parameters:
+  - name: admin.password
+    path: "Device.X_HW_Security.AdminPassword"
+    type: string
+```
+
+### Resolução de esquema por fabricante
+
+A cada Inform o sistema identifica o fabricante reportado pela CPE e resolve o esquema a ser usado:
+
+1. Normaliza o nome do fabricante para um slug (ex: `"Huawei Technologies Co., Ltd."` → `"huawei"`)
+2. Verifica se existe `vendors/<slug>/<modelo>/` no diretório de esquemas
+3. Se existir, carrega o esquema genérico do modelo como base e **sobrepõe** apenas os parâmetros definidos no esquema vendor-específico
+4. Se não existir, usa somente o esquema genérico (`tr181` ou `tr098`)
+
+O nome do esquema resolvido (ex: `"vendor/huawei/tr181"` ou `"tr181"`) é persistido no documento do dispositivo no MongoDB.
+
+### Adicionando suporte a um novo fabricante
+
+Crie um arquivo YAML apenas com os parâmetros que diferem do padrão:
+
+```bash
+mkdir -p schemas/vendors/meuFabricante/tr181
+cat > schemas/vendors/meufabricante/tr181/change_password.yaml << 'EOF'
+id: change_password
+model: tr181
+vendor: meufabricante
+description: Senha de administrador
+
+parameters:
+  - name: admin.password
+    path: "Device.X_VENDOR_AdminPassword"
+    type: string
+EOF
+```
+
+Reinicie a aplicação. Nenhuma alteração de código é necessária.
 
 ## Desenvolvimento
 
@@ -473,14 +552,19 @@ O Dockerfile usa multi-stage build: compila em `golang:1.25-alpine` e gera uma i
 .
 +-- cmd/api/           Ponto de entrada da aplicação
 +-- configs/           Arquivos de configuração
++-- schemas/           Esquemas YAML de parâmetros TR-069
+|   +-- tr181/         Caminhos padrão TR-181
+|   +-- tr098/         Caminhos padrão TR-098
+|   +-- vendors/       Sobreposições por fabricante
 +-- internal/
 |   +-- api/           Roteamento e handlers REST
 |   +-- auth/          JWT e Digest Auth
 |   +-- config/        Estruturas e carregamento de configuração
 |   +-- cwmp/          Servidor e handler CWMP (TR-069 / SOAP)
-|   +-- datamodel/     Mappers TR-181 e TR-098, descoberta de instâncias
+|   +-- datamodel/     Interface Mapper, TR-181 e TR-098, descoberta de instâncias
 |   +-- device/        Modelo, repositório MongoDB e serviço de dispositivos
 |   +-- logger/        Wrapper do logger
+|   +-- schema/        Registry, Resolver e SchemaMapper orientados a YAML
 |   +-- task/          Tipos de tarefa, fila Redis e executor
 +-- web/               Interface web (HTML, CSS, JS) incorporada ao binário
 +-- examples/          Simulador de CPE para testes locais

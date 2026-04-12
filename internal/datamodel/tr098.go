@@ -303,7 +303,7 @@ func (m *TR098Mapper) PortMappingCountPath() string {
 // Web admin interface
 
 // WebAdminPasswordPath returns "" for TR-098 because the spec defines no
-// standard parameter for the local web admin password — each vendor uses a
+// standard parameter for the local web admin password  each vendor uses a
 // proprietary X_ extension. Callers should fall back to TypeSetParams with
 // the vendor-specific path when this returns an empty string.
 func (m *TR098Mapper) WebAdminPasswordPath() string { return "" }

@@ -291,7 +291,7 @@ func (m *TR181Mapper) PortMappingCountPath() string {
 // Web admin interface
 
 // WebAdminPasswordPath returns the TR-181 standard path for the local web
-// administration password (Users table, first user — typically the admin).
+// administration password (Users table, first user  typically the admin).
 func (m *TR181Mapper) WebAdminPasswordPath() string {
 	return "Device.Users.User.1.Password"
 }

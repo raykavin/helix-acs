@@ -223,10 +223,10 @@ func initSchemaRegistry(schemasDir string, appLogger l.Logger) *schema.Registry 
 	if err := reg.LoadDir(schemasDir); err != nil {
 		appLogger.WithError(err).
 			WithField("dir", schemasDir).
-			Warn("schema: failed to load schemas — falling back to built-in mappers")
+			Warn("Failed to load schemas falling back to built-in mappers")
 		return reg
 	}
-	appLogger.WithField("dir", schemasDir).Info("schema: loaded TR-069 parameter schemas")
+	appLogger.WithField("dir", schemasDir).Info("Loaded TR-069 parameter schemas")
 	return reg
 }
 

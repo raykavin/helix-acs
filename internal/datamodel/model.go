@@ -159,7 +159,7 @@ func DetectFromRootObject(rootObject string) ModelType {
 func ApplyInstanceMap(mapper Mapper, im InstanceMap) Mapper {
 	switch m := mapper.(type) {
 	case *TR181Mapper:
-		c := *m // shallow copy — safe, all fields are scalars or slices
+		c := *m // shallow copy  safe, all fields are scalars or slices
 		if im.WANIPIfaceIdx > 0 {
 			c.WANIfaceIdx = im.WANIPIfaceIdx
 		}

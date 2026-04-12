@@ -24,7 +24,7 @@ go.work.sum
 *.env
 !*.env.example
 
-# YAML — ignore secrets but allow infrastructure files
+# YAML  ignore secrets but allow infrastructure files
 configs/config.yml
 !configs/config.example.yml
 

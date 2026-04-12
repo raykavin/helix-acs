@@ -194,7 +194,7 @@ func (e *Executor) BuildSetParams(ctx context.Context, t *Task, mapper datamodel
 		}
 		return params, nil
 
-	// WebAdmin — change local web interface password
+	// WebAdmin  change local web interface password
 	case TypeWebAdmin:
 		var p WebAdminPayload
 		if err := json.Unmarshal(t.Payload, &p); err != nil {
