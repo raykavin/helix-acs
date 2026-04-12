@@ -1,0 +1,11 @@
+id: hosts
+model: tr098
+description: Connected hosts parameters for TR-098 devices
+
+parameters:
+  - name: hosts.base
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.Hosts.Host."
+    type: string
+  - name: hosts.count
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.Hosts.HostNumberOfEntries"
+    type: unsignedInt

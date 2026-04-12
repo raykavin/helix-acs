@@ -1,0 +1,17 @@
+id: diagnostics
+model: tr181
+description: Diagnostic tool base paths for TR-181 devices
+
+parameters:
+  - name: diag.ping.base
+    path: "Device.IP.Diagnostics.IPPing."
+    type: string
+  - name: diag.traceroute.base
+    path: "Device.IP.Diagnostics.TraceRoute."
+    type: string
+  - name: diag.download.base
+    path: "Device.IP.Diagnostics.DownloadDiagnostics."
+    type: string
+  - name: diag.upload.base
+    path: "Device.IP.Diagnostics.UploadDiagnostics."
+    type: string

@@ -1,0 +1,11 @@
+id: hosts
+model: tr181
+description: Connected hosts parameters for TR-181 devices
+
+parameters:
+  - name: hosts.base
+    path: "Device.Hosts.Host."
+    type: string
+  - name: hosts.count
+    path: "Device.Hosts.HostNumberOfEntries"
+    type: unsignedInt

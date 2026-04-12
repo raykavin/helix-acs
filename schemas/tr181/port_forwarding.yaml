@@ -1,0 +1,11 @@
+id: port_forwarding
+model: tr181
+description: Port forwarding (NAT port mapping) parameters for TR-181 devices
+
+parameters:
+  - name: portmapping.base
+    path: "Device.NAT.PortMapping."
+    type: string
+  - name: portmapping.count
+    path: "Device.NAT.PortMappingNumberOfEntries"
+    type: unsignedInt

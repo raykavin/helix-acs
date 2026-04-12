@@ -1,0 +1,17 @@
+id: management
+model: tr098
+description: Management server parameters for TR-098 devices
+
+parameters:
+  - name: mgmt.url
+    path: "InternetGatewayDevice.ManagementServer.URL"
+    type: string
+  - name: mgmt.user
+    path: "InternetGatewayDevice.ManagementServer.Username"
+    type: string
+  - name: mgmt.pass
+    path: "InternetGatewayDevice.ManagementServer.Password"
+    type: string
+  - name: mgmt.interval
+    path: "InternetGatewayDevice.ManagementServer.PeriodicInformInterval"
+    type: unsignedInt

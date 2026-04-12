@@ -1,0 +1,23 @@
+id: lan
+model: tr181
+description: LAN and DHCP configuration parameters for TR-181 devices
+
+parameters:
+  - name: lan.ip_address
+    path: "Device.IP.Interface.{lan}.IPv4Address.1.IPAddress"
+    type: string
+  - name: lan.subnet_mask
+    path: "Device.IP.Interface.{lan}.IPv4Address.1.SubnetMask"
+    type: string
+  - name: dhcp.server_enable
+    path: "Device.DHCPv4.Server.Enable"
+    type: boolean
+  - name: dhcp.min_address
+    path: "Device.DHCPv4.Server.Pool.1.MinAddress"
+    type: string
+  - name: dhcp.max_address
+    path: "Device.DHCPv4.Server.Pool.1.MaxAddress"
+    type: string
+  - name: lan.dns
+    path: "Device.DHCPv4.Server.Pool.1.DNSServers"
+    type: string

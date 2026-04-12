@@ -1,0 +1,104 @@
+id: wifi
+model: tr098
+description: WiFi configuration parameters for TR-098 devices
+
+parameters:
+  # 2.4 GHz band (band index 0)
+  - name: wifi.ssid.0
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.WLANConfiguration.{wlan_0}.SSID"
+    type: string
+  - name: wifi.password.0
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.WLANConfiguration.{wlan_0}.PreSharedKey.1.KeyPassphrase"
+    type: string
+  - name: wifi.enabled.0
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.WLANConfiguration.{wlan_0}.Enable"
+    type: boolean
+  - name: wifi.channel.0
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.WLANConfiguration.{wlan_0}.Channel"
+    type: unsignedInt
+  - name: wifi.bssid.0
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.WLANConfiguration.{wlan_0}.BSSID"
+    type: string
+  - name: wifi.standard.0
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.WLANConfiguration.{wlan_0}.Standard"
+    type: string
+  - name: wifi.security_mode.0
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.WLANConfiguration.{wlan_0}.BeaconType"
+    type: string
+  - name: wifi.channel_width.0
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.WLANConfiguration.{wlan_0}.OperatingChannelBandwidth"
+    type: string
+  - name: wifi.tx_power.0
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.WLANConfiguration.{wlan_0}.TransmitPower"
+    type: unsignedInt
+  - name: wifi.client_count.0
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.WLANConfiguration.{wlan_0}.TotalAssociations"
+    type: unsignedInt
+  - name: wifi.stats.bytes_sent.0
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.WLANConfiguration.{wlan_0}.Stats.BytesSent"
+    type: unsignedInt
+  - name: wifi.stats.bytes_received.0
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.WLANConfiguration.{wlan_0}.Stats.BytesReceived"
+    type: unsignedInt
+  - name: wifi.stats.packets_sent.0
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.WLANConfiguration.{wlan_0}.Stats.PacketsSent"
+    type: unsignedInt
+  - name: wifi.stats.packets_received.0
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.WLANConfiguration.{wlan_0}.Stats.PacketsReceived"
+    type: unsignedInt
+  - name: wifi.stats.errors_sent.0
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.WLANConfiguration.{wlan_0}.Stats.ErrorsSent"
+    type: unsignedInt
+  - name: wifi.stats.errors_received.0
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.WLANConfiguration.{wlan_0}.Stats.ErrorsReceived"
+    type: unsignedInt
+
+  # 5 GHz band (band index 1)
+  - name: wifi.ssid.1
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.WLANConfiguration.{wlan_1}.SSID"
+    type: string
+  - name: wifi.password.1
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.WLANConfiguration.{wlan_1}.PreSharedKey.1.KeyPassphrase"
+    type: string
+  - name: wifi.enabled.1
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.WLANConfiguration.{wlan_1}.Enable"
+    type: boolean
+  - name: wifi.channel.1
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.WLANConfiguration.{wlan_1}.Channel"
+    type: unsignedInt
+  - name: wifi.bssid.1
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.WLANConfiguration.{wlan_1}.BSSID"
+    type: string
+  - name: wifi.standard.1
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.WLANConfiguration.{wlan_1}.Standard"
+    type: string
+  - name: wifi.security_mode.1
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.WLANConfiguration.{wlan_1}.BeaconType"
+    type: string
+  - name: wifi.channel_width.1
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.WLANConfiguration.{wlan_1}.OperatingChannelBandwidth"
+    type: string
+  - name: wifi.tx_power.1
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.WLANConfiguration.{wlan_1}.TransmitPower"
+    type: unsignedInt
+  - name: wifi.client_count.1
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.WLANConfiguration.{wlan_1}.TotalAssociations"
+    type: unsignedInt
+  - name: wifi.stats.bytes_sent.1
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.WLANConfiguration.{wlan_1}.Stats.BytesSent"
+    type: unsignedInt
+  - name: wifi.stats.bytes_received.1
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.WLANConfiguration.{wlan_1}.Stats.BytesReceived"
+    type: unsignedInt
+  - name: wifi.stats.packets_sent.1
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.WLANConfiguration.{wlan_1}.Stats.PacketsSent"
+    type: unsignedInt
+  - name: wifi.stats.packets_received.1
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.WLANConfiguration.{wlan_1}.Stats.PacketsReceived"
+    type: unsignedInt
+  - name: wifi.stats.errors_sent.1
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.WLANConfiguration.{wlan_1}.Stats.ErrorsSent"
+    type: unsignedInt
+  - name: wifi.stats.errors_received.1
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.WLANConfiguration.{wlan_1}.Stats.ErrorsReceived"
+    type: unsignedInt

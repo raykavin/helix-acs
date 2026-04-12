@@ -1,0 +1,17 @@
+id: diagnostics
+model: tr098
+description: Diagnostic tool base paths for TR-098 devices
+
+parameters:
+  - name: diag.ping.base
+    path: "InternetGatewayDevice.IPPingDiagnostics."
+    type: string
+  - name: diag.traceroute.base
+    path: "InternetGatewayDevice.TraceRouteDiagnostics."
+    type: string
+  - name: diag.download.base
+    path: "InternetGatewayDevice.DownloadDiagnostics."
+    type: string
+  - name: diag.upload.base
+    path: "InternetGatewayDevice.UploadDiagnostics."
+    type: string

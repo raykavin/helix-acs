@@ -1,0 +1,56 @@
+id: wan
+model: tr181
+description: WAN interface configuration parameters for TR-181 devices
+
+parameters:
+  - name: wan.connection_type
+    path: "Device.IP.Interface.{wan}.IPv4Address.1.AddressingType"
+    type: string
+  - name: wan.pppoe_user
+    path: "Device.PPP.Interface.{ppp}.Username"
+    type: string
+  - name: wan.pppoe_pass
+    path: "Device.PPP.Interface.{ppp}.Password"
+    type: string
+  - name: wan.ip_address
+    path: "Device.IP.Interface.{wan}.IPv4Address.1.IPAddress"
+    type: string
+  - name: wan.gateway
+    path: "Device.Routing.Router.1.IPv4Forwarding.1.GatewayIPAddress"
+    type: string
+  - name: wan.dns1
+    path: "Device.DNS.Client.Server.1.DNSServer"
+    type: string
+  - name: wan.dns2
+    path: "Device.DNS.Client.Server.2.DNSServer"
+    type: string
+  - name: wan.mtu
+    path: "Device.IP.Interface.{wan}.MaxMTUSize"
+    type: unsignedInt
+  - name: wan.uptime
+    path: "Device.IP.Interface.{wan}.LastChange"
+    type: unsignedInt
+  - name: wan.mac
+    path: "Device.Ethernet.Interface.1.MACAddress"
+    type: string
+  - name: wan.status
+    path: "Device.IP.Interface.{wan}.Status"
+    type: string
+  - name: wan.stats.bytes_sent
+    path: "Device.IP.Interface.{wan}.Stats.BytesSent"
+    type: unsignedInt
+  - name: wan.stats.bytes_received
+    path: "Device.IP.Interface.{wan}.Stats.BytesReceived"
+    type: unsignedInt
+  - name: wan.stats.packets_sent
+    path: "Device.IP.Interface.{wan}.Stats.PacketsSent"
+    type: unsignedInt
+  - name: wan.stats.packets_received
+    path: "Device.IP.Interface.{wan}.Stats.PacketsReceived"
+    type: unsignedInt
+  - name: wan.stats.errors_sent
+    path: "Device.IP.Interface.{wan}.Stats.ErrorsSent"
+    type: unsignedInt
+  - name: wan.stats.errors_received
+    path: "Device.IP.Interface.{wan}.Stats.ErrorsReceived"
+    type: unsignedInt

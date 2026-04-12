@@ -1,0 +1,11 @@
+id: port_forwarding
+model: tr098
+description: Port forwarding parameters for TR-098 devices
+
+parameters:
+  - name: portmapping.base
+    path: "InternetGatewayDevice.WANDevice.{wan_dev}.WANConnectionDevice.{wan_conn}.WANIPConnection.{wan_ip_conn}.PortMapping."
+    type: string
+  - name: portmapping.count
+    path: "InternetGatewayDevice.WANDevice.{wan_dev}.WANConnectionDevice.{wan_conn}.WANIPConnection.{wan_ip_conn}.PortMappingNumberOfEntries"
+    type: unsignedInt

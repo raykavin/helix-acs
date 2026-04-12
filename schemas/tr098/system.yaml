@@ -1,0 +1,14 @@
+id: system
+model: tr098
+description: System information parameters for TR-098 devices
+
+parameters:
+  - name: system.uptime
+    path: "InternetGatewayDevice.DeviceInfo.UpTime"
+    type: unsignedInt
+  - name: system.ram_total
+    path: "InternetGatewayDevice.DeviceInfo.MemoryStatus.Total"
+    type: unsignedInt
+  - name: system.ram_free
+    path: "InternetGatewayDevice.DeviceInfo.MemoryStatus.Free"
+    type: unsignedInt

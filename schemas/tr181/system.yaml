@@ -1,0 +1,14 @@
+id: system
+model: tr181
+description: System information parameters for TR-181 devices
+
+parameters:
+  - name: system.uptime
+    path: "Device.DeviceInfo.UpTime"
+    type: unsignedInt
+  - name: system.ram_total
+    path: "Device.DeviceInfo.MemoryStatus.Total"
+    type: unsignedInt
+  - name: system.ram_free
+    path: "Device.DeviceInfo.MemoryStatus.Free"
+    type: unsignedInt

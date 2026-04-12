@@ -1,0 +1,57 @@
+id: wan
+model: tr098
+description: WAN interface configuration parameters for TR-098 devices
+
+parameters:
+  - name: wan.connection_type
+    path: "InternetGatewayDevice.WANDevice.{wan_dev}.WANConnectionDevice.{wan_conn}.WANIPConnection.{wan_ip_conn}.ConnectionType"
+    type: string
+  - name: wan.pppoe_user
+    path: "InternetGatewayDevice.WANDevice.{wan_dev}.WANConnectionDevice.{wan_conn}.WANPPPConnection.{wan_ppp_conn}.Username"
+    type: string
+  - name: wan.pppoe_pass
+    path: "InternetGatewayDevice.WANDevice.{wan_dev}.WANConnectionDevice.{wan_conn}.WANPPPConnection.{wan_ppp_conn}.Password"
+    type: string
+  - name: wan.ip_address
+    path: "InternetGatewayDevice.WANDevice.{wan_dev}.WANConnectionDevice.{wan_conn}.WANIPConnection.{wan_ip_conn}.ExternalIPAddress"
+    type: string
+  - name: wan.gateway
+    path: "InternetGatewayDevice.WANDevice.{wan_dev}.WANConnectionDevice.{wan_conn}.WANIPConnection.{wan_ip_conn}.DefaultGateway"
+    type: string
+  - name: wan.dns1
+    path: "InternetGatewayDevice.WANDevice.{wan_dev}.WANConnectionDevice.{wan_conn}.WANIPConnection.{wan_ip_conn}.DNSServers"
+    type: string
+  - name: wan.dns2
+    path: "InternetGatewayDevice.WANDevice.{wan_dev}.WANConnectionDevice.{wan_conn}.WANIPConnection.{wan_ip_conn}.DNSServers"
+    type: string
+  - name: wan.mtu
+    path: "InternetGatewayDevice.WANDevice.{wan_dev}.WANConnectionDevice.{wan_conn}.WANIPConnection.{wan_ip_conn}.MaxMTUSize"
+    type: unsignedInt
+  - name: wan.uptime
+    path: "InternetGatewayDevice.WANDevice.{wan_dev}.WANConnectionDevice.{wan_conn}.WANIPConnection.{wan_ip_conn}.Uptime"
+    type: unsignedInt
+  - name: wan.mac
+    path: "InternetGatewayDevice.WANDevice.{wan_dev}.WANEthernetInterfaceConfig.MACAddress"
+    type: string
+  - name: wan.status
+    path: "InternetGatewayDevice.WANDevice.{wan_dev}.WANConnectionDevice.{wan_conn}.WANIPConnection.{wan_ip_conn}.ConnectionStatus"
+    type: string
+  - name: wan.stats.bytes_sent
+    path: "InternetGatewayDevice.WANDevice.{wan_dev}.WANCommonInterfaceConfig.TotalBytesSent"
+    type: unsignedInt
+  - name: wan.stats.bytes_received
+    path: "InternetGatewayDevice.WANDevice.{wan_dev}.WANCommonInterfaceConfig.TotalBytesReceived"
+    type: unsignedInt
+  - name: wan.stats.packets_sent
+    path: "InternetGatewayDevice.WANDevice.{wan_dev}.WANCommonInterfaceConfig.TotalPacketsSent"
+    type: unsignedInt
+  - name: wan.stats.packets_received
+    path: "InternetGatewayDevice.WANDevice.{wan_dev}.WANCommonInterfaceConfig.TotalPacketsReceived"
+    type: unsignedInt
+  # TR-098 WANCommonInterfaceConfig does not expose error counters; paths intentionally empty
+  - name: wan.stats.errors_sent
+    path: ""
+    type: unsignedInt
+  - name: wan.stats.errors_received
+    path: ""
+    type: unsignedInt

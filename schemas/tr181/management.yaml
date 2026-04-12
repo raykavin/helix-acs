@@ -1,0 +1,17 @@
+id: management
+model: tr181
+description: Management server parameters for TR-181 devices
+
+parameters:
+  - name: mgmt.url
+    path: "Device.ManagementServer.URL"
+    type: string
+  - name: mgmt.user
+    path: "Device.ManagementServer.Username"
+    type: string
+  - name: mgmt.pass
+    path: "Device.ManagementServer.Password"
+    type: string
+  - name: mgmt.interval
+    path: "Device.ManagementServer.PeriodicInformInterval"
+    type: unsignedInt

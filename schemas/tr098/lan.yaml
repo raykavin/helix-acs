@@ -1,0 +1,23 @@
+id: lan
+model: tr098
+description: LAN and DHCP configuration parameters for TR-098 devices
+
+parameters:
+  - name: lan.ip_address
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.LANHostConfigManagement.IPInterface.1.IPInterfaceIPAddress"
+    type: string
+  - name: lan.subnet_mask
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.LANHostConfigManagement.IPInterface.1.IPInterfaceSubnetMask"
+    type: string
+  - name: dhcp.server_enable
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.LANHostConfigManagement.DHCPServerEnable"
+    type: boolean
+  - name: dhcp.min_address
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.LANHostConfigManagement.MinAddress"
+    type: string
+  - name: dhcp.max_address
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.LANHostConfigManagement.MaxAddress"
+    type: string
+  - name: lan.dns
+    path: "InternetGatewayDevice.LANDevice.{lan_dev}.LANHostConfigManagement.DNSServers"
+    type: string
