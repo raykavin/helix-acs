@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// ---- TR-181 WAN/LAN discovery -----------------------------------------------
+// TR-181 WAN/LAN discovery
 
 func TestDiscoverTR181WANAndLAN(t *testing.T) {
 	params := map[string]string{
@@ -49,7 +49,7 @@ func TestDiscoverTR181EmptyIPIgnored(t *testing.T) {
 	assert.Equal(t, 0, im.LANIPIfaceIdx) // empty string → not classified
 }
 
-// ---- TR-181 PPP discovery ---------------------------------------------------
+// TR-181 PPP discover
 
 func TestDiscoverTR181PPP(t *testing.T) {
 	params := map[string]string{
@@ -60,7 +60,7 @@ func TestDiscoverTR181PPP(t *testing.T) {
 	assert.Equal(t, 3, im.PPPIfaceIdx)
 }
 
-// ---- TR-181 WiFi discovery via OperatingFrequencyBand ----------------------
+// TR-181 WiFi discovery via OperatingFrequencyBand
 
 func TestDiscoverTR181WiFiViaFrequencyBand(t *testing.T) {
 	params := map[string]string{
@@ -116,7 +116,7 @@ func TestDiscoverTR181WiFiFallbackSortedIndex(t *testing.T) {
 	assert.Equal(t, 5, im.WiFiSSIDIndices[1], "band 1 should get SSID index 5")
 }
 
-// ---- TR-098 WAN discovery ---------------------------------------------------
+// TR-098 WAN discover
 
 func TestDiscoverTR098WAN(t *testing.T) {
 	params := map[string]string{
@@ -138,7 +138,7 @@ func TestDiscoverTR098PPP(t *testing.T) {
 	assert.Equal(t, 2, im.WANPPPConnIdx)
 }
 
-// ---- TR-098 WLAN discovery --------------------------------------------------
+// TR-098 WLAN discover-
 
 func TestDiscoverTR098WLAN(t *testing.T) {
 	params := map[string]string{
@@ -157,7 +157,7 @@ func TestDiscoverTR098LANDevice(t *testing.T) {
 	assert.Equal(t, 2, im.LANDeviceIdx)
 }
 
-// ---- ApplyInstanceMap -------------------------------------------------------
+// ApplyInstanceMa
 
 func TestApplyInstanceMapTR181(t *testing.T) {
 	base := &TR181Mapper{}
@@ -216,7 +216,7 @@ func TestApplyInstanceMapUnknownMapper(t *testing.T) {
 	assert.True(t, ok)
 }
 
-// ---- isPublicIP / isPrivateIP -----------------------------------------------
+// isPublicIP / isPrivateIP
 
 func TestIsPrivateIP(t *testing.T) {
 	assert.True(t, isPrivateIP("192.168.1.1"))
