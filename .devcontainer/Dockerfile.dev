@@ -1,0 +1,26 @@
+# Base Image
+FROM mcr.microsoft.com/devcontainers/go:2.0.2-1.25-trixie AS development
+
+# Environment
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=America/Belem
+
+# Fix Debian Trixie (remove broken Yarn repo)
+RUN rm -f /etc/apt/sources.list.d/yarn.list
+
+# Install additional packages 
+RUN apt-get update && apt-get install -y \
+    fish \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Configure timezone
+RUN ln -snf /usr/share/zoneinfo/America/Belem /etc/localtime \
+    && echo America/Belem > /etc/timezone
+
+# Set fish as default shell for vscode user
+RUN chsh -s /usr/bin/fish vscode
+
+# Default user
+USER vscode
+
+CMD ["fish"]

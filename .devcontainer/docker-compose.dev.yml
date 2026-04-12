@@ -1,0 +1,46 @@
+services:
+  mongo:
+    image: mongo:7
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - devnet
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+    networks:
+      - devnet
+    command: redis-server --appendonly yes
+
+  golang:
+    tty: true
+    container_name: development_golang
+    restart: on-failure
+    working_dir: /workspaces/app
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      target: development
+    ports:
+      - "7547:7547"
+      - "8080:8080"
+    depends_on:
+      - mongo
+      - redis
+    networks:
+      - devnet
+    volumes:
+      - ./../:/workspaces/app:rw
+      - ../.docker/go/bin:/go/bin:rw
+      - ../.docker/go/pkg:/go/pkg:rw
+
+networks:
+  devnet:
+    name: devnet
+    driver: bridge
+
+volumes:
+  mongo_data:
+  redis_data:

@@ -1,0 +1,46 @@
+{
+    "name": "Helix ACS DevContainer (Golang)",
+    "workspaceFolder": "/workspaces/app",
+    "dockerComposeFile": [
+        "docker-compose.dev.yml"
+    ],
+    "containerEnv": {
+        "TZ": "America/Belem",
+        "PROJECT_NAME": "github.com/raykavin/helix-acs",
+
+        "GIT_CONFIG_DEV_USERNAME": "raykavin",
+        "GIT_CONFIG_DEV_EMAIL": "raykavin.meireles@gmail.com",
+        "GIT_CONFIG_TOKEN": "",
+
+        "GIT_REPO_ADDRESS": "https://github.com/raykavin/helix-acs.git",
+        "GIT_INIT_DEFAULT_BRANCH": "feat/initial-setup",
+
+        "GO_PROXY_HOST": "",
+        "GO_PROXY_PORT": ""
+    },
+    "service": "golang",
+    "remoteUser": "vscode",
+    "postCreateCommand": "sh ./.devcontainer/post-create.sh",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "golang.Go",
+                "liuchao.go-struct-tag",
+                "yokoe.vscode-postfix-go",
+                "streetsidesoftware.code-spell-checker",
+                "streetsidesoftware.code-spell-checker-portuguese-brazilian",
+                "redhat.vscode-yaml",
+                "teddyandturtle.fish",
+                "neonxp.gotools",
+                "tooltitudeteam.tooltitude",
+                "usernamehw.errorlens",
+                "mhutchie.git-graph"
+            ],
+            "settings": {
+                "terminal.integrated.defaultProfile.linux": "fish",
+                "go.toolsManagement.checkForUpdates": "local",
+                "go.useLanguageServer": true
+            }
+        }
+    }
+}
