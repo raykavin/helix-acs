@@ -26,6 +26,46 @@ Servidor de configuração automática (ACS) para gerenciamento de equipamentos 
 
 ---
 
+## Imagens
+
+**Login**
+
+![Login](images/1.png)
+
+**Dashboard**
+
+![Dashboard](images/2.png)
+
+**Dispositivos**
+
+![Dispositivos](images/3.png)
+
+**Detalhes do dispositivo**
+
+![Informações](images/4.png)
+
+![Rede](images/5.png)
+
+![Hosts conectados](images/6.png)
+
+![Parâmetros TR-069](images/7.png)
+
+![Histórico de tarefas](images/8.png)
+
+**Criação de tarefas**
+
+![Tipos de tarefa](images/10.png)
+
+![Configuração Wi-Fi](images/9.png)
+
+![Senha da interface web](images/11.png)
+
+**Saúde do sistema**
+
+![Saúde do sistema](images/12.png)
+
+---
+
 ## Visão geral
 
 O Helix ACS funciona como o lado servidor do protocolo TR-069. Quando um roteador ou modem (CPE) é ligado, ele contata o ACS via HTTP/SOAP. O servidor então registra o dispositivo, aplica configurações pendentes e coleta estatísticas, tudo de forma transparente para o usuário final.
