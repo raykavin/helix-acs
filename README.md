@@ -132,20 +132,26 @@ CPE (roteador/modem)
   Administrador (navegador / API client)
 ```
 
-**Pacotes principais:**
+O repositório é um **Go Workspace monorepo** (`go work`) com dois servidores independentes que compartilham módulos internos:
 
-| Pacote | Responsabilidade |
-|---|---|
-| `cmd/api` | Ponto de entrada, composição de dependências e inicialização dos servidores |
-| `internal/cwmp` | Protocolo CWMP: parsing de SOAP, sessão Inform, execução de tarefas |
-| `internal/api` | Roteamento HTTP, handlers REST, middlewares (CORS, JWT, rate limit, logging) |
-| `internal/device` | Modelo de dispositivo, repositório MongoDB e serviço |
-| `internal/task` | Tipos de tarefa, payloads, fila Redis e executor |
-| `internal/datamodel` | Interface `Mapper`, mappers TR-181 e TR-098 com descoberta dinâmica de instâncias |
-| `internal/schema` | Carregamento de esquemas YAML, resolução por fabricante e `SchemaMapper` |
-| `internal/auth` | JWT e Digest Auth |
-| `internal/config` | Carregamento e validação de configuração (Viper) |
-| `web` | Interface web incorporada ao binário (HTML, CSS, JS) |
+**Apps (`apps/`)**
+
+| App | Módulo | Responsabilidade |
+|---|---|---|
+| `apps/api` | `…/apps/api` | Ponto de entrada do servidor REST; composição de dependências, roteamento HTTP, handlers, middlewares (CORS, JWT, rate limit, logging) e interface web embutida |
+| `apps/cwmp` | `…/apps/cwmp` | Ponto de entrada do servidor CWMP; protocolo TR-069, parsing de SOAP, gerenciamento de sessão Inform e execução de tarefas |
+
+**Packages (`packages/`)**
+
+| Pacote | Módulo | Responsabilidade |
+|---|---|---|
+| `packages/config` | `…/packages/config` | Carregamento e validação de configuração (Viper) |
+| `packages/logger` | `…/packages/logger` | Interface `Logger`, wrapper zerolog |
+| `packages/auth` | `…/packages/auth` | JWT e Digest Auth (RFC 2617) |
+| `packages/device` | `…/packages/device` | Modelo de dispositivo, repositório MongoDB e serviço |
+| `packages/task` | `…/packages/task` | Tipos de tarefa, payloads, fila Redis e executor |
+| `packages/datamodel` | `…/packages/datamodel` | Interface `Mapper`, mappers TR-181 e TR-098 com descoberta dinâmica de instâncias |
+| `packages/schema` | `…/packages/schema` | Carregamento de esquemas YAML, resolução por fabricante e `SchemaMapper` |
 
 ## Pré-requisitos
 
@@ -233,14 +239,23 @@ Consulte o arquivo [configs/config.example.yml](configs/config.example.yml) para
 ### Local (binário)
 
 ```bash
-# Instalar dependências e compilar
-go build -o helix ./cmd/api
+# Compilar os dois servidores em bin/
+make build
+
+# Ou compilar individualmente
+make build-api   # → bin/api
+make build-cwmp  # → bin/cwmp
 
 # Iniciar com o arquivo de configuração padrão
-./helix
+./bin/api  -config ./configs/config.yml
+./bin/cwmp -config ./configs/config.yml
 
-# Iniciar com caminho de configuração personalizado
-./helix -config /etc/helix/config.yml
+# Rodar em modo desenvolvimento (com go run, ambos simultaneamente)
+make dev
+
+# Apenas um servidor
+make dev-api
+make dev-cwmp
 ```
 
 ### Docker Compose
@@ -264,19 +279,32 @@ docker compose down
 
 O `docker-compose.yml` expõe as portas `7547` (CWMP) e `8080` (API/UI) no host. Os dados do MongoDB e Redis são persistidos em volumes nomeados.
 
-### Docker (imagem isolada)
+### Docker (imagens isoladas)
+
+Cada servidor possui seu próprio `Dockerfile`. Os builds devem ser executados **a partir da raiz do repositório** para que o contexto do workspace esteja disponível.
 
 ```bash
-# Build da imagem
-docker build -t helix-acs .
+# Build das imagens
+make docker-api   # → helix-api:1.0.0
+make docker-cwmp  # → helix-cwmp:1.0.0
 
-# Executar com arquivo de configuração montado
+# Ou diretamente
+docker build -f apps/api/Dockerfile  -t helix-api:latest  .
+docker build -f apps/cwmp/Dockerfile -t helix-cwmp:latest .
+
+# Executar o servidor de API com arquivo de configuração montado
+docker run -d \
+  -p 8080:8080 \
+  -v $(pwd)/configs:/helix-api/configs \
+  --name helix-api \
+  helix-api:latest
+
+# Executar o servidor CWMP (schemas embutidos na imagem)
 docker run -d \
   -p 7547:7547 \
-  -p 8080:8080 \
-  -v $(pwd)/configs:/helix/configs \
-  --name helix-acs \
-  helix-acs
+  -v $(pwd)/configs:/helix-cwmp/configs \
+  --name helix-cwmp \
+  helix-cwmp:latest
 ```
 
 ## Interface web
@@ -529,47 +557,77 @@ Reinicie a aplicação. Nenhuma alteração de código é necessária.
 ### Executar testes
 
 ```bash
-go test ./...
+# Todos os módulos do workspace
+make test
+# ou:
+go test github.com/raykavin/helix-acs/...
+
+# Módulo específico
+cd packages/auth && go test ./...
 ```
 
 ### Build local
 
 ```bash
-go build -o helix ./cmd/api
+make build        # compila ambos em bin/
+make build-api    # bin/api
+make build-cwmp   # bin/cwmp
 ```
 
-### Build da imagem Docker
+### Build das imagens Docker
+
+Cada servidor tem seu próprio Dockerfile com multi-stage build (compila em `golang:1.25-alpine`, imagem final mínima em `alpine:3.22` sem privilégios de root).
 
 ```bash
-docker build -t helix-acs .
+make docker-api
+make docker-cwmp
 ```
 
-O Dockerfile usa multi-stage build: compila em `golang:1.25-alpine` e gera uma imagem final mínima baseada em `alpine:3.22`, rodando com usuário sem privilégios de root.
+### CI sem go.work
+
+Para ambientes que não ativam o workspace, cada `go.mod` já possui `replace` directives apontando para os módulos locais:
+
+```bash
+GOWORK=off go build ./cmd/...   # executar dentro de apps/api ou apps/cwmp
+GOWORK=off go test ./...        # executar dentro de cada módulo individualmente
+```
 
 ### Estrutura de diretórios
 
 ```
 .
-+-- cmd/api/           Ponto de entrada da aplicação
-+-- configs/           Arquivos de configuração
-+-- schemas/           Esquemas YAML de parâmetros TR-069
-|   +-- tr181/         Caminhos padrão TR-181
-|   +-- tr098/         Caminhos padrão TR-098
-|   +-- vendors/       Sobreposições por fabricante
-+-- internal/
-|   +-- api/           Roteamento e handlers REST
-|   +-- auth/          JWT e Digest Auth
-|   +-- config/        Estruturas e carregamento de configuração
-|   +-- cwmp/          Servidor e handler CWMP (TR-069 / SOAP)
-|   +-- datamodel/     Interface Mapper, TR-181 e TR-098, descoberta de instâncias
-|   +-- device/        Modelo, repositório MongoDB e serviço de dispositivos
-|   +-- logger/        Wrapper do logger
-|   +-- schema/        Registry, Resolver e SchemaMapper orientados a YAML
-|   +-- task/          Tipos de tarefa, fila Redis e executor
-+-- web/               Interface web (HTML, CSS, JS) incorporada ao binário
-+-- examples/          Simulador de CPE para testes locais
-+-- docker-compose.yml Ambiente completo com MongoDB e Redis
-+-- Dockerfile         Build e imagem de produção
+├── go.work                    Workspace declara todos os módulos locais
+├── apps/
+│   ├── api/                   Servidor HTTP/REST
+│   │   ├── cmd/main.go        Ponto de entrada
+│   │   ├── internal/
+│   │   │   ├── router.go      Roteamento e wiring de handlers
+│   │   │   ├── handler/       Handlers REST (auth, device, task, health)
+│   │   │   └── middleware/    CORS, JWT, logging, rate limit, recovery
+│   │   ├── web/               Interface web embutida (HTML, CSS, JS)
+│   │   ├── go.mod
+│   │   └── Dockerfile
+│   └── cwmp/                  Servidor CWMP/TR-069
+│       ├── cmd/main.go        Ponto de entrada
+│       ├── internal/cwmp/     Protocolo CWMP: SOAP, sessão Inform, execução de tarefas
+│       ├── go.mod
+│       └── Dockerfile
+├── packages/
+│   ├── config/                Carregamento e validação de configuração (Viper)
+│   ├── logger/                Interface Logger e wrapper zerolog
+│   ├── auth/                  JWT e Digest Auth (RFC 2617)
+│   ├── device/                Modelo, repositório MongoDB e serviço de dispositivos
+│   ├── datamodel/             Interface Mapper, TR-181, TR-098, descoberta de instâncias
+│   ├── task/                  Tipos de tarefa, fila Redis e executor
+│   └── schema/                Registry, Resolver e SchemaMapper orientados a YAML
+├── schemas/                   Esquemas YAML de parâmetros TR-069
+│   ├── tr181/                 Caminhos padrão TR-181
+│   ├── tr098/                 Caminhos padrão TR-098
+│   └── vendors/               Sobreposições por fabricante (huawei, zte…)
+├── configs/                   Arquivos de configuração
+├── examples/                  Simulador de CPE para testes locais
+├── Makefile
+└── MIGRATION.md               Histórico completo da migração monolito → monorepo
 ```
 
 ## Contribuindo
