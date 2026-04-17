@@ -71,10 +71,10 @@ Servidor de configuração automática (ACS) para gerenciamento de equipamentos 
 
 O Helix ACS funciona como o lado servidor do protocolo TR-069. Quando um roteador ou modem (CPE) é ligado, ele contata o ACS via HTTP/SOAP. O servidor então registra o dispositivo, aplica configurações pendentes e coleta estatísticas, tudo de forma transparente para o usuário final.
 
-Dois servidores HTTP rodam simultaneamente:
+O sistema é composto por dois binários independentes que devem rodar simultaneamente:
 
-- **Servidor CWMP** na porta `7547`: recebe conexões das CPEs (autenticação Digest)
-- **Servidor de API e interface web** na porta `8080`: utilizado pelos administradores (autenticação JWT)
+- **`cmd/cwmp`** na porta `7547`: recebe conexões das CPEs (autenticação Digest)
+- **`cmd/api`** na porta `8080`: API REST e interface web para administradores (autenticação JWT)
 
 ## Funcionalidades
 
@@ -136,7 +136,9 @@ CPE (roteador/modem)
 
 | Pacote | Responsabilidade |
 |---|---|
-| `cmd/api` | Ponto de entrada, composição de dependências e inicialização dos servidores |
+| `cmd/api` | Ponto de entrada do servidor de API: composição de dependências e inicialização |
+| `cmd/cwmp` | Ponto de entrada do servidor CWMP: composição de dependências e inicialização |
+| `internal/wiring` | Funções compartilhadas entre os binários: conexão com MongoDB/Redis, HTTP server, logger e banner |
 | `internal/cwmp` | Protocolo CWMP: parsing de SOAP, sessão Inform, execução de tarefas |
 | `internal/api` | Roteamento HTTP, handlers REST, middlewares (CORS, JWT, rate limit, logging) |
 | `internal/device` | Modelo de dispositivo, repositório MongoDB e serviço |
@@ -230,17 +232,20 @@ Consulte o arquivo [configs/config.example.yml](configs/config.example.yml) para
 
 ## Execução
 
-### Local (binário)
+### Local (binários)
 
 ```bash
-# Instalar dependências e compilar
-go build -o helix ./cmd/api
+# Compilar os dois binários
+go build -o helix-api  ./cmd/api
+go build -o helix-cwmp ./cmd/cwmp
 
-# Iniciar com o arquivo de configuração padrão
-./helix
+# Iniciar com o arquivo de configuração padrão (em terminais separados)
+./helix-api
+./helix-cwmp
 
 # Iniciar com caminho de configuração personalizado
-./helix -config /etc/helix/config.yml
+./helix-api  -config /etc/helix/config.yml
+./helix-cwmp -config /etc/helix/config.yml
 ```
 
 ### Docker Compose
@@ -535,7 +540,8 @@ go test ./...
 ### Build local
 
 ```bash
-go build -o helix ./cmd/api
+go build -o helix-api  ./cmd/api
+go build -o helix-cwmp ./cmd/cwmp
 ```
 
 ### Build da imagem Docker
@@ -550,13 +556,16 @@ O Dockerfile usa multi-stage build: compila em `golang:1.25-alpine` e gera uma i
 
 ```
 .
-+-- cmd/api/           Ponto de entrada da aplicação
++-- cmd/
+|   +-- api/           Ponto de entrada do servidor de API (REST + Web UI)
+|   +-- cwmp/          Ponto de entrada do servidor CWMP (TR-069)
 +-- configs/           Arquivos de configuração
 +-- schemas/           Esquemas YAML de parâmetros TR-069
 |   +-- tr181/         Caminhos padrão TR-181
 |   +-- tr098/         Caminhos padrão TR-098
 |   +-- vendors/       Sobreposições por fabricante
 +-- internal/
+|   +-- wiring/        Funções compartilhadas entre os binários (MongoDB, Redis, HTTP, logger)
 |   +-- api/           Roteamento e handlers REST
 |   +-- auth/          JWT e Digest Auth
 |   +-- config/        Estruturas e carregamento de configuração

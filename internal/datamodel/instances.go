@@ -68,12 +68,12 @@ func isTR181Params(params map[string]string) bool {
 // ---- TR-181 discovery -------------------------------------------------------
 
 var (
-	reIPIfaceAddr   = regexp.MustCompile(`^Device\.IP\.Interface\.(\d+)\.IPv4Address\.\d+\.IPAddress$`)
-	rePPPIface      = regexp.MustCompile(`^Device\.PPP\.Interface\.(\d+)\.`)
-	reRadioFreq     = regexp.MustCompile(`^Device\.WiFi\.Radio\.(\d+)\.OperatingFrequencyBand$`)
-	reSSIDLower     = regexp.MustCompile(`^Device\.WiFi\.SSID\.(\d+)\.LowerLayers$`)
-	reAPRef         = regexp.MustCompile(`^Device\.WiFi\.AccessPoint\.(\d+)\.SSIDReference$`)
-	reSSIDAnything  = regexp.MustCompile(`^Device\.WiFi\.SSID\.(\d+)\.`)
+	reIPIfaceAddr  = regexp.MustCompile(`^Device\.IP\.Interface\.(\d+)\.IPv4Address\.\d+\.IPAddress$`)
+	rePPPIface     = regexp.MustCompile(`^Device\.PPP\.Interface\.(\d+)\.`)
+	reRadioFreq    = regexp.MustCompile(`^Device\.WiFi\.Radio\.(\d+)\.OperatingFrequencyBand$`)
+	reSSIDLower    = regexp.MustCompile(`^Device\.WiFi\.SSID\.(\d+)\.LowerLayers$`)
+	reAPRef        = regexp.MustCompile(`^Device\.WiFi\.AccessPoint\.(\d+)\.SSIDReference$`)
+	reSSIDAnything = regexp.MustCompile(`^Device\.WiFi\.SSID\.(\d+)\.`)
 )
 
 func discoverTR181(params map[string]string, im *InstanceMap) {
