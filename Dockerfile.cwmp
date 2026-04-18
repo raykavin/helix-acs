@@ -1,0 +1,43 @@
+ARG GO_VERSION=1.25-alpine
+ARG TZ=America/Belem
+ARG PROJECT_NAME=helix-cwmp
+
+FROM golang:${GO_VERSION} AS builder
+
+ARG PROJECT_NAME
+ARG TZ
+
+WORKDIR /app
+
+RUN apk add --no-cache git gcc musl-dev tzdata && \
+    ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && echo ${TZ} > /etc/timezone
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+RUN CGO_ENABLED=1 go build -o /bin/cwmp ./cmd/cwmp
+
+FROM alpine:3.22
+
+ARG TZ=America/Belem
+ARG APP_USER_ID=1001
+ARG APP_GROUP_ID=1001
+
+ENV TZ=${TZ}
+
+RUN apk add --no-cache ca-certificates tzdata curl bash && \
+    ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && echo ${TZ} > /etc/timezone && \
+    addgroup -g ${APP_GROUP_ID} helix && \
+    adduser -D -u ${APP_USER_ID} -G helix -s /bin/sh helix && \
+    mkdir -p /helix && chown -R helix:helix /helix
+
+COPY --from=builder --chown=helix:helix /bin/cwmp /bin/cwmp
+COPY configs/ /helix/configs/
+COPY schemas/ /helix/schemas/
+
+USER helix
+WORKDIR /helix
+
+ENTRYPOINT ["/bin/cwmp"]
+CMD ["-config", "/helix/configs/config.yml"]

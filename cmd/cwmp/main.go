@@ -10,10 +10,13 @@ import (
 
 	stdlogger "log"
 
-	"github.com/raykavin/helix-acs/internal/api"
 	"github.com/raykavin/helix-acs/internal/auth"
 	"github.com/raykavin/helix-acs/internal/config"
+	cwmpserver "github.com/raykavin/helix-acs/internal/cwmp"
+	"github.com/raykavin/helix-acs/internal/device"
 	l "github.com/raykavin/helix-acs/internal/logger"
+	"github.com/raykavin/helix-acs/internal/schema"
+	"github.com/raykavin/helix-acs/internal/task"
 	"github.com/raykavin/helix-acs/internal/wiring"
 )
 
@@ -31,7 +34,7 @@ func main() {
 	appLogger := wiring.NewLogger(appCfg)
 
 	wiring.DisplayBanner(appCfg)
-	appLogger.Debug("Helix ACS starting...")
+	appLogger.Debug("Helix ACS CWMP starting...")
 
 	ctx, stop := signal.NotifyContext(
 		context.Background(),
@@ -46,10 +49,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	appLogger.Info("Helix ACS stopped")
+	appLogger.Info("Helix ACS CWMP stopped")
 }
 
-// run is the composition root: wires all dependencies and starts the API server.
 func run(ctx context.Context, cfg config.ConfigProvider, appLogger l.Logger) error {
 	storageDB, err := wiring.ConnectStorage(cfg, appLogger)
 	if err != nil {
@@ -76,29 +78,44 @@ func run(ctx context.Context, cfg config.ConfigProvider, appLogger l.Logger) err
 
 	appCfg := cfg.GetApplication()
 	acsConfig := appCfg.GetACS()
-	apiConfig := appCfg.GetAPI()
 	cacheCC, _ := cfg.GetDatabase(wiring.CacheDBName)
 
-	jwtCfg := appCfg.GetJWT()
-	jwtSvc := auth.NewJWTService(jwtCfg.GetSecret(), jwtCfg.GetExpiresIn(), jwtCfg.GetRefreshExpiresIn())
 	taskQueue := wiring.NewTaskQueue(cacheDB, cacheCC.GetTTL(), tsk.GetMaxAttempts())
+	schemaReg := initSchemaRegistry(acsConfig.GetSchemasDir(), appLogger)
+	cwmpSrv := initCWMPServer(deviceSvc, taskQueue, acsConfig, appLogger, schemaReg)
 
-	routerCfg := api.Config{
-		CORS:        apiConfig.GetCORS(),
-		MaxAttempts: tsk.GetMaxAttempts(),
-		ACSUsername: acsConfig.GetUsername(),
-		ACSPassword: acsConfig.GetPassword(),
+	return wiring.ServeHTTP(ctx, fmt.Sprintf(":%d", acsConfig.GetListenPort()), "CWMP", cwmpSrv.Router(), appLogger)
+}
+
+func initSchemaRegistry(schemasDir string, appLogger l.Logger) *schema.Registry {
+	reg := schema.NewRegistry()
+	if err := reg.LoadDir(schemasDir); err != nil {
+		appLogger.WithError(err).
+			WithField("dir", schemasDir).
+			Warn("Failed to load schemas falling back to built-in mappers")
+		return reg
 	}
+	appLogger.WithField("dir", schemasDir).Info("Loaded TR-069 parameter schemas")
+	return reg
+}
 
-	apiRouter := api.NewRouter(
+func initCWMPServer(
+	deviceSvc device.Service,
+	taskQueue *task.RedisQueue,
+	acs config.ACSConfigProvider,
+	appLogger l.Logger,
+	schemaReg *schema.Registry,
+) *cwmpserver.Server {
+	handler := cwmpserver.NewHandler(
 		deviceSvc,
 		taskQueue,
-		jwtSvc,
-		storageDB,
-		cacheDB,
 		appLogger,
-		routerCfg,
+		acs.GetUsername(),
+		acs.GetPassword(),
+		acs.GetURL(),
+		acs.GetInformInterval(),
+		schemaReg,
 	)
-
-	return wiring.ServeHTTP(ctx, fmt.Sprintf(":%d", apiConfig.GetListenPort()), "API", apiRouter, appLogger)
+	digestAuth := auth.NewDigestAuth(appLogger, "ACS", acs.GetUsername(), acs.GetPassword())
+	return cwmpserver.NewServer(handler, digestAuth, appLogger)
 }
